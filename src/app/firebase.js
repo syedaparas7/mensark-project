@@ -6,22 +6,15 @@ import { getFirestore } from "firebase/firestore";
 // https://firebase.google.com/docs/web/setup#available-libraries
 
   const firebaseConfig = {
-//  apiKey: "AIzaSyAMCcsovFxHtt2G7ibOZ3M5-WYNP0iMSyA",
-//   authDomain: "e-commerce-470f6.firebaseapp.com",
-//   projectId: "e-commerce-470f6",
-//   storageBucket: "e-commerce-470f6.firebasestorage.app",
-//   messagingSenderId: "213671538861",
-//   appId: "1:213671538861:web:79e3b9287053ea59599624",
-//   measurementId: "G-Y7S7CLR8YY"
-    //myfirebasecode
-    apiKey: "AIzaSyDWdMDWdQ7QdWsZmWlCJVP6QtOhbfmMMF0",
-    authDomain: "mensark-sark.firebaseapp.com",
-    projectId: "mensark-sark",
-    storageBucket: "mensark-sark.firebasestorage.app",
-    messagingSenderId: "639920278169",
-    appId: "1:639920278169:web:16794a60bbd42602ffc608",
-    measurementId: "G-Z495M81G9L"
-  };
+
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
+};
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
