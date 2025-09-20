@@ -12,6 +12,7 @@
 
 # testing
 /coverage
+//backend/serviceAccountKey.json
 
 # next.js
 /.next/

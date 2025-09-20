@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { FiTrash2 } from "react-icons/fi";
 import Loader from "../loader/page";
+import { checkAdminClaim } from "@/app/firebase";
 
 export default function AdminDashboardWelcome() {
   const [revenue, setRevenue] = useState(0);
@@ -22,8 +23,23 @@ export default function AdminDashboardWelcome() {
   const [products, setProducts] = useState([]);
   const [users, setUsers] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+const [reviews, setReviews] = useState([]);
+
+  const [categories, setCategories] = useState([]);
+  const [videos, setVideos] = useState([]);
 
 
+useEffect(() => {
+    const verifyAdmin = async () => {
+      const isAdmin = await checkAdminClaim();
+      if (!isAdmin) {
+        alert("You are not an admin!");
+        // Yahan aap redirect ya dashboard hide kar sakte ho
+      }
+    };
+
+    verifyAdmin();
+  }, []);
   useEffect(() => {
     const fetchOrders = async () => {
       setIsLoading(true)
@@ -104,7 +120,6 @@ export default function AdminDashboardWelcome() {
     setIsLoading(false);
   }, [orders]);
 
-
   useEffect(() => {
     const date = new Date();
     date.setMonth(date.getMonth() + parseInt(expireIn));
@@ -115,7 +130,55 @@ export default function AdminDashboardWelcome() {
     }));
   }, [expireIn]);
 
+  // fetch categories
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const res = await fetch("/api/categories");
+        const allCategories = await res.json();
+        setCategories(allCategories);
+      } catch (error) {
+        console.error("Failed to fetch categories:", error);
+      }
+    };
+    fetchCategories();
+  }, []);
+
+  // fetch videos
+  useEffect(() => {
+    const fetchVideos = async () => {
+      try {
+        const res = await fetch("/api/videos");
+        const allVideos = await res.json();
+        setVideos(allVideos);
+      } catch (error) {
+        console.error("Failed to fetch videos:", error);
+      }
+    };
+    fetchVideos();
+  }, []);
+
+ // reviews fetch + methods ✔
+// reviews fetch ✔
+useEffect(() => {
+  const fetchReviews = async () => {
+    try {
+      const res = await fetch('/api/reviews');
+      const data = await res.json();
+      setReviews(data);
+    } catch (error) {
+      console.error("Failed to fetch reviews:", error);
+    }
+  };
+  fetchReviews();
+}, []);
+
+
+
+  
+
   return (
+    
     <> {isLoading && <Loader />}
       <section className="relative w-full min-h-screen bg-gray-900 overflow-hidden">
         {/* Background Image */}
@@ -125,8 +188,9 @@ export default function AdminDashboardWelcome() {
           className="absolute inset-0 w-full h-full object-cover opacity-60"
           fill
           priority
-        />
+          />
 
+         <div>Admin Dashboard Content</div>;
         {/* Top-left Icon */}
         <div className="absolute top-5 pt-30 left-5 z-20 flex items-center space-x-2">
           <LayoutDashboard className="w-8 h-8 text-white" />
@@ -138,7 +202,13 @@ export default function AdminDashboardWelcome() {
           <span className="text-sm sm:text-base">Create Coupon</span>
         </button>
 
-
+<div className="flex justify-end mb-4">
+  <Link href="/admindashboard/adminPage" className="mr-4">
+    <button className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+      Go to Admin Panel
+    </button>
+  </Link>
+</div>
         {/* Overlay Welcome Content */}
         <div className="relative z-10 flex pt-60 flex-col items-center justify-center h-full px-4 text-center">
           <div className="bg-black/50 backdrop-blur-sm rounded-lg p-8 sm:p-12 max-w-2xl mx-auto mb-10">
@@ -187,18 +257,44 @@ export default function AdminDashboardWelcome() {
                 <p className="text-sm text-gray-600">Registered users</p>
               </div>
             </Link>
+      {/* Categories Card */}
+<Link href="/admindashboard/categories">
+  <div className="bg-white/80 backdrop-blur-sm rounded-lg p-6 shadow text-left hover:bg-white transition cursor-pointer">
+    <div className="flex items-center justify-between mb-2">
+      <h3 className="text-gray-800 font-semibold text-lg">Categories</h3>
+      <Users className="text-gray-700 w-6 h-6" />
+    </div>
+    <p className="text-2xl font-bold text-gray-900">{categories && categories?.length}</p>
+    <p className="text-sm text-gray-600">Total categories</p>
+  </div>
+</Link>
+
+{/* Videos Card */}
+<Link href="/admindashboard/videos">
+  <div className="bg-white/80 backdrop-blur-sm rounded-lg p-6 shadow text-left hover:bg-white transition cursor-pointer">
+    <div className="flex items-center justify-between mb-2">
+      <h3 className="text-gray-800 font-semibold text-lg">Videos</h3>
+      <Users className="text-gray-700 w-6 h-6" />
+    </div>
+    <p className="text-2xl font-bold text-gray-900">{videos && videos?.length}</p>
+    <p className="text-sm text-gray-600">Total videos</p>
+  </div>
+</Link>
 
             {/* Revenue Card */}
-            <Link href="">
-              <div className="bg-white/80 backdrop-blur-sm rounded-lg p-6 shadow text-left hover:bg-white transition cursor-pointer">
-                <div className="flex items-center justify-between mb-2">
-                  <h3 className="text-gray-800 font-semibold text-lg">Revenue</h3>
-                  <span className="text-gray-700 font-bold text-lg">PKR</span>
-                </div>
-                <p className="text-2xl font-bold text-gray-900">Rs{revenue}</p>
-                <p className="text-sm text-gray-600">This month</p>
-              </div>
-            </Link>
+       <Link href="/admindashboard/reviews">
+  <div className="bg-white/80 backdrop-blur-sm rounded-lg p-6 shadow text-left hover:bg-white transition cursor-pointer">
+    <div className="flex items-center justify-between mb-2">
+      <h3 className="text-gray-800 font-semibold text-lg">Reviews</h3>
+      <Users className="text-gray-700 w-6 h-6" />
+    </div>
+    <p className="text-2xl font-bold text-gray-900">{reviews && reviews?.length}</p>
+    <p className="text-sm text-gray-600">Total Reviews</p>
+  </div>
+</Link>
+
+
+
           </div>
         </div>
       </section>

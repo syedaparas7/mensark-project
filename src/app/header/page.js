@@ -1,67 +1,115 @@
-'use client';
+"use client";
 
 import React, { useState, useEffect, useContext } from 'react';
-import { Menu, ShoppingCart, X, Truck } from 'lucide-react';
-import clsx from 'clsx';
 import { useRouter } from 'next/navigation';
-import { Poppins } from 'next/font/google';
 import Link from 'next/link';
+import Image from 'next/image';
+import clsx from 'clsx';
 import toast from 'react-hot-toast';
 import { FiHeart } from 'react-icons/fi';
+import { Menu, X, ShoppingCart, Truck } from 'lucide-react';
 import { signOut } from 'firebase/auth';
 import { auth } from '../firebase';
-import Loader from '../loader/page';
 import CartContext from '../cartcontext/cartcontext';
-import Image from 'next/image';
+import Loader from '../loader/page';
+
+import { Poppins } from 'next/font/google';
 
 const poppins = Poppins({ subsets: ['latin'], weight: '700' });
 
 export default function HeaderPage() {
-  const [activeCategory, setActiveCategory] = useState(null);
-  const [isNavOpen, setIsNavOpen] = useState(false);
+
+  const { cartItems, setCartItems, setWishList, wishlist, currUser, setCurrUser } = useContext(CartContext);
+
+  // Admin dynamic data
+
+  // Modals state
+
   const [loginModalOpen, setLoginModalOpen] = useState(false);
   const [isSignUp, setIsSignUp] = useState(false);
-  const [formData, setFormData] = useState({
-    fullName: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-  });
+  const [formData, setFormData] = useState({ fullName: '', email: '', password: '', confirmPassword: '' });
   const [formError, setFormError] = useState('');
   const [showMore, setShowMore] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const { cartItems, setCartItems, setWishList, wishlist, currUser, setCurrUser } = useContext(CartContext);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [resetEmail, setResetEmail] = useState('');
+  const [activeCategory, setActiveCategory] = useState(null);
+  const [isNavOpen, setIsNavOpen] = useState(false);
 
   const router = useRouter();
 
   useEffect(() => {
-    const user = JSON.parse(localStorage.getItem('user'));
-    setCurrUser(user || null);
+    const user = JSON.parse(localStorage.getItem('user') || 'null');
+    setCurrUser(user);
 
-    const allCartItems = JSON.parse(localStorage.getItem('cart'));
-    setCartItems(allCartItems || null);
+    const allCartItems = JSON.parse(localStorage.getItem('cart') || '[]');
+    setCartItems(allCartItems);
 
-    const allWishlistItems = JSON.parse(localStorage.getItem('wishlist'));
-    setWishList(allWishlistItems || []);
+    const allWishlistItems = JSON.parse(localStorage.getItem('wishlist') || '[]');
+    setWishList(allWishlistItems);
   }, []);
+
+
+useEffect(() => {
+  if (!isAdmin) return;
+
+  const fetchData = async () => {
+    try {
+      const token = await currUser?.getIdToken();
+
+      const [catRes, vidRes, revRes] = await Promise.all([
+        fetch("/api/categories", {
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+        }),
+        fetch("/api/videos", {
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+        }),
+        fetch("/api/reviews", {
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+        }),
+      ]);
+
+      console.log("Categories status:", catRes.status);
+      console.log("Videos status:", vidRes.status);
+      console.log("Reviews status:", revRes.status);
+
+      if (!catRes.ok) throw new Error(`Categories API failed ❌ ${catRes.status}`);
+      if (!vidRes.ok) throw new Error(`Videos API failed ❌ ${vidRes.status}`);
+      if (!revRes.ok) throw new Error(`Reviews API failed ❌ ${revRes.status}`);
+
+      const [catData, vidData, revData] = await Promise.all([
+        catRes.json(),
+        vidRes.json(),
+        revRes.json(),
+      ]);
+
+      setCategoriesData(catData);
+      setVideosData(vidData);
+      setReviewsData(revData);
+    } catch (err) {
+      console.error("Failed to fetch admin data:", err.message);
+    }
+  };
+
+  fetchData();
+}, [currUser]);  // ✅ ab safe
 
   const userCategories = [
     { name: "Home", link: '/' },
     { name: "All Men's", link: '/all-products' },
-    { name: ' T-Shirts & Shirts', link: '/shirts' },
+    { name: 'T-Shirts & Shirts', link: '/shirts' },
     { name: 'Trousers', link: '/trouser' },
     { name: 'New Arrivals', link: '/new-arrival' },
     { name: 'Sale', link: '/sale' },
-    // { name: 'About Us', link: '/about' },
-    // { name: 'Contact Us', link: '/contact' },
   ];
 
   const adminCategories = [
     { name: 'Products', link: '/admindashboard/products' },
     { name: 'Orders', link: '/admindashboard/orders' },
     { name: 'Users', link: '/admindashboard/users' },
+    { name: 'Categories', link: '/admindashboard/categories' },
+    { name: 'Videos', link: '/admindashboard/videos' },
+    { name: 'reviews', link: '/admindashboard/reviews' },
   ];
 
   const resetForm = () => {
@@ -87,13 +135,12 @@ export default function HeaderPage() {
     setIsLoading(true);
     setFormError(null);
 
-    try {
+     try {
       const res = await fetch('/api/resetpass', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ resetEmail }),
       });
-
       const data = await res.json();
 
       if (!res.ok) {
@@ -276,10 +323,41 @@ export default function HeaderPage() {
                 )}
               </ul>
             </div>
+            {/* categories,vdos,reviews */}
+            {isAdmin && (
+              <>
+                {/* <li className="relative">
+                  <button
+                    className="transition hover:text-black"
+                    onClick={() => setOpenCategoryModal(true)}
+                  >
+                    Categories
+                  </button>
+                </li>
+                <li className="relative">
+                  <button
+                    className="transition hover:text-black"
+                    onClick={() => setOpenVideoModal(true)}
+                  >
+                    Videos
+                  </button>
+                </li>
+                <li className="relative">
+                  <button
+                    className="transition hover:text-black"
+                    onClick={() => setOpenReviewModal(true)}
+                  >
+                    Reviews
+                  </button>
+                </li> */}
+              </>
+            )}
+
 
             {/* Right actions */}
             <div className="flex items-center space-x-4 flex-1 justify-end">
               {!isAdmin && (
+
                 <>
                   <button onClick={() => router.push('/wishlist')} className="relative text-gray-700 hover:text-black cursor-pointer">
                     <FiHeart className="h-6 w-6" />
@@ -301,6 +379,7 @@ export default function HeaderPage() {
                   <button onClick={() => router.push('/track')} className="text-gray-700 hover:text-black cursor-pointer">
                     <Truck className="h-6 w-6" />
                   </button>
+
                 </>
               )}
 
@@ -491,11 +570,12 @@ export default function HeaderPage() {
         </div>
       )}
 
+
       {showForgotPassword && (
         <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/40 backdrop-blur-sm">
           <div className="relative w-full max-w-sm p-6 bg-white rounded-lg shadow-lg text-black">
             <button
-              onClick={() => setShowForgotPassword(false)}
+              onClick={() => setShowForgotPassword(true)}
               className="absolute right-4 top-4 rounded-sm bg-gray-200 px-3 py-1 text-xl font-bold text-gray-600 hover:bg-gray-300 focus:outline-none"
               aria-label="Close modal"
             >

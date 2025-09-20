@@ -78,13 +78,19 @@ export default function Cart() {
 
 
 
-  const totalItems = cartItems?.reduce((acc, p) => acc + p.quantity, 0);
-  const subtotal = cartItems?.reduce((acc, p) => acc + p.price * p.quantity, 0);
+  const totalItems = cartItems?.reduce((acc, p) => acc + (Number(p.quantity) || 0), 0);
+
+  const subtotal = cartItems?.reduce((acc, p) => {
+    const price = Number(p.price) || 0;
+    const quantity = Number(p.quantity) || 0;
+    return acc + price * quantity;
+  }, 0) || 0;
+
   const discount =
     discountType === 'percentage'
-      ? (subtotal * discountValue) / 100
+      ? (subtotal * (Number(discountValue) || 0)) / 100
       : discountType === 'fixed'
-        ? discountValue
+        ? Number(discountValue) || 0
         : 0;
   const shipping = cartItems?.length > 0 ? 200 : 0;
   const tax = (subtotal - discount) * 0.07;
@@ -251,7 +257,7 @@ export default function Cart() {
               <p className="mb-4 text-gray-700 font-semibold">We accept:</p>
               <div className="flex space-x-6 items-center">
                 <Image src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Mastercard_2019_logo.svg/1200px-Mastercard_2019_logo.svg.png" alt="Master Card" width={50} height={50} className="object-contain" />
-                 <Image src="https://static.vecteezy.com/system/resources/thumbnails/030/740/487/small_2x/cash-on-delivery-logo-free-png.png" alt="EasyPaisa" width={50} height={50} className="object-contain" />
+                <Image src="https://static.vecteezy.com/system/resources/thumbnails/030/740/487/small_2x/cash-on-delivery-logo-free-png.png" alt="EasyPaisa" width={50} height={50} className="object-contain" />
               </div>
             </div>
           </div>

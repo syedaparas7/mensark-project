@@ -76,8 +76,11 @@ export default function OrdersTable() {
         ? orders
         : orders.filter((order) => order.status === statusFilter);
 
-    const totalPages = Math.ceil(filteredOrders.length / itemsPerPage);
-    const paginatedOrders = filteredOrders.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+    const totalPages = Math.ceil((Array.isArray(filteredOrders) ? filteredOrders.length : 0) / itemsPerPage);
+const paginatedOrders = (Array.isArray(filteredOrders) ? filteredOrders : []).slice(
+  (currentPage - 1) * itemsPerPage,
+  currentPage * itemsPerPage
+);
 
     return (
         <>

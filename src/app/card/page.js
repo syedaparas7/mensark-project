@@ -25,21 +25,42 @@ function CardPage({
   console.log(isFav)
 
   return (
-    <div
-      className="relative bg-transparent sm:w-[48%] md:w-[36%] lg:w-[28%] xl:w-[22%] 2xl:w-[19.2%]
-         shadow-lg flex mx-1 gap-4 no-scrollbar
-         scroll-smooth pb-1 group flex-shrink-0 flex flex-col justify-between
-         transition-transform duration-300 hover:-translate-y-1 hover:shadow-xl
-         border border-gray-600 rounded-md mt-6 mb-6"
-    >
+    // <div
+    //   className="relative bg-transparent 
+    //      sm:w-[48%] md:w-[36%] lg:w-[28%] xl:w-[22%] 2xl:w-[19.2%]
+    //      shadow-lg flex mx-1 gap-4 no-scrollbar
+    //      scroll-smooth pb-1 group flex-shrink-0 flex flex-col justify-between
+    //      transition-transform duration-300 hover:-translate-y-1 hover:shadow-xl
+    //      border border-gray-600 rounded-md mt-6 mb-6"
+    // >
+    //  <div
+    //     className="relative bg-transparent 
+    // w-full max-w-[200px] sm:max-w-[220px] md:max-w-[240px] lg:max-w-[260px] xl:max-w-[280px] 
+    // h-[400px] sm:h-[420px] md:h-[440px] lg:h-[460px] xl:h-[560px]
+    // shadow-lg flex flex-col justify-between mx-auto
+    // transition-transform duration-300 hover:-translate-y-1 hover:shadow-xl
+    // border border-gray-600 rounded-md overflow-hidden mt-6 mb-6"
+    //   > 
+<div
+  className="relative bg-transparent 
+    w-full max-w-[200px] sm:max-w-[220px] md:max-w-[240px] lg:max-w-[260px] xl:max-w-[280px]
+    h-[480px] sm:h-[500px] md:h-[520px] lg:h-[540px] xl:h-[560px]
+    shadow-lg flex flex-col justify-between
+    transition-transform duration-300 hover:-translate-y-1 hover:shadow-xl
+    border border-gray-300 rounded-md overflow-hidden
+    min-h-[480px] mt-2 mb-4 mx-auto"
+>
+
+
       <Link href={`/carddetail/${product?.id}`}>
 
         {/* 🔴 Discount Badge */}
-        {product?.discount !== '0' && (
+        {Number(product?.discount) > 0 && (
           <div className="absolute top-0 right-0 z-20 bg-red-600 text-white text-[9px] sm:text-xs px-1.5 sm:px-2 py-0.5 sm:py-1 shadow-lg font-semibold rounded-bl-2xl">
-            {product?.discount}% OFF
+            {`${Number(product?.discount)}% OFF`}
           </div>
         )}
+
 
         {/* 📸 Image */}
         <div className="relative h-60 sm:h-72 group">
@@ -49,9 +70,8 @@ function CardPage({
                 src={images[currentImage] || '/fallback.jpg'}
                 alt={product?.title || 'Product image'}
                 fill
-                className={`object-cover w-full h-full rounded-tl-md rounded-tr-md cursor-pointer transition-transform duration-500 ${
-                  isZoomed ? 'scale-125' : 'scale-100'
-                }`}
+                className={`object-cover w-full h-full rounded-tl-md rounded-tr-md cursor-pointer transition-transform duration-500 ${isZoomed ? 'scale-125' : 'scale-100'
+                  }`}
               />
             )}
           </div>
@@ -65,9 +85,8 @@ function CardPage({
             <div className="bg-black/60 p-1 rounded-tr-md rounded-bl-md">
               <button onClick={() => toggleFavorite(product)} aria-label="Toggle favorite">
                 <FiHeart
-                  className={`w-5 h-5 sm:w-6 sm:h-6 ${
-                    isFav ? 'text-red-600 fill-red-600' : 'text-white'
-                  }`}
+                  className={`w-5 h-5 sm:w-6 sm:h-6 ${isFav ? 'text-red-600 fill-red-600' : 'text-white'
+                    }`}
                 />
               </button>
             </div>
@@ -82,9 +101,8 @@ function CardPage({
                 aria-label="Toggle zoom"
               >
                 <FiEye
-                  className={`w-5 h-5 sm:w-6 sm:h-6 text-white transition-transform duration-300 ${
-                    isZoomed ? 'scale-125' : 'scale-100'
-                  }`}
+                  className={`w-5 h-5 sm:w-6 sm:h-6 text-white transition-transform duration-300 ${isZoomed ? 'scale-125' : 'scale-100'
+                    }`}
                 />
               </button>
             </div>
@@ -150,11 +168,10 @@ function CardPage({
                   <button
                     key={sz}
                     onClick={() => handleSizeSelect(product, sz)}
-                    className={`px-1.5 sm:px-3 py-[1px] sm:py-1 rounded border text-[10px] sm:text-sm transition-all duration-200 ${
-                      selected === sz
-                        ? 'bg-black text-white border-black'
-                        : 'bg-transparent text-black border-gray-400'
-                    }`}
+                    className={`px-1.5 sm:px-3 py-[1px] sm:py-1 rounded border text-[10px] sm:text-sm transition-all duration-200 ${selected === sz
+                      ? 'bg-black text-white border-black'
+                      : 'bg-transparent text-black border-gray-400'
+                      }`}
                   >
                     {sz}
                   </button>
@@ -165,13 +182,20 @@ function CardPage({
           {/* 💰 Price & Add to Cart */}
           <div className="flex justify-between items-center pt-1">
             <div className="min-h-[38px] sm:min-h-[44px] flex flex-col justify-center">
-              {product?.discount !== '0' ? (
+              {Number(product?.discount) > 0 ? (
                 <>
+                  {/* Original Price */}
                   <p className="text-[10px] sm:text-sm text-gray-500 line-through">
-                    Rs{parseFloat(product?.price).toFixed(2)}
+                    Rs{Number(product?.price || 0).toFixed(2)}
                   </p>
+
+                  {/* Discounted Price */}
                   <p className="text-[13px] sm:text-lg font-semibold text-black">
-                    Rs{(parseFloat(product.price) * (1 - product?.discount / 100)).toFixed(2)}
+                    Rs
+                    {(
+                      Number(product?.price || 0) *
+                      (1 - Number(product?.discount || 0) / 100)
+                    ).toFixed(2)}
                   </p>
                 </>
               ) : (
@@ -179,30 +203,30 @@ function CardPage({
                   {/* Empty line to align height visually */}
                   <div className="h-[14px] sm:h-[18px]"></div>
                   <p className="text-[13px] sm:text-lg font-semibold text-black">
-                    Rs{parseFloat(product?.price).toFixed(2)}
+                    Rs{Number(product?.price || 0).toFixed(2)}
                   </p>
                 </>
               )}
             </div>
+          </div>
 
-            <button
-              onClick={() => addToCartHandler(product)}
-             className="text-black border border-black 
+          <button
+            onClick={() => addToCartHandler(product)}
+            className="text-black border border-black 
      rounded-tr-md rounded-bl-md sm:rounded-tr-xl sm:rounded-bl-xl
      transition-all duration-300 hover:bg-black hover:text-white 
      flex items-center justify-center
      w-10 h-10 sm:min-w-[120px] sm:h-12
      text-xs sm:text-sm font-medium"
-            >
-              <span className="block sm:hidden">
-                <FiShoppingCart className="w-4 h-4" />
-              </span>
-              <span className="hidden sm:block cursor-pointer">Add to Cart</span>
-            </button>
-          </div>
+          >
+            <span className="block sm:hidden">
+              <FiShoppingCart className="w-4 h-4" />
+            </span>
+            <span className="hidden sm:block cursor-pointer">Add to Cart</span>
+          </button>
         </div>
-      </Link>
-    </div>
+      </Link >
+    </div >
   )
 }
 

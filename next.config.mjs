@@ -18,6 +18,7 @@ const nextConfig = {
       "dtcralphlauren.scene7.com",
       "mobile.yoox.com",
       "i.pinimg.com",
+      "res.cloudinary.com",
       "weavewardrobe.com",
       "www.transparentpng.com",
       "5.imimg.com",
@@ -30,7 +31,7 @@ const nextConfig = {
       "crystalpng.com",
       "www.gdchome.com",
       "www.shutterstock.com",
-      "res.cloudinary.com"
+
     ],
     remotePatterns: [
       {
@@ -43,3 +44,4 @@ const nextConfig = {
 };
 
 export default nextConfig;
+

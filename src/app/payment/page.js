@@ -25,14 +25,19 @@ export default function PaymentPage() {
 
     setCartItems(storedCart);
 
-    const subtotal = storedCart.reduce((acc, item) => acc + item.price * item.quantity, 0);
+const subtotal = storedCart.reduce((acc, item) => {
+  const price = Number(item.price) || 0;
+  const quantity = Number(item.quantity) || 0;
+  return acc + price * quantity;
+}, 0);
+
     const discount = subtotal * 0.1;
     const shipping = storedCart.length > 0 ? 200 : 0;
     const tax = (subtotal - discount) * 0.07;
     const total = subtotal - discount + shipping + tax;
 
     setTotalAmount(Math.round(total));
-  }, []);
+  }, [cartItems]);
 
   const [formData, setFormData] = useState({
     fullName: '',
@@ -67,9 +72,9 @@ export default function PaymentPage() {
     if (!emailRegex.test(email)) {
       toast.error('Please enter a valid email address.');
       return false;
-    }
+    }E
 
-    // ✅ Pakistani phone number validation (11 digits, starts with 03)
+    // ✅ Pakistani phone number|E validation (11 digits, starts with 03)
     const phoneRegex = /^(03[0-9]{9}|\+923[0-9]{9})$/;
     if (!phoneRegex.test(phone)) {
       toast.error('Phone number must contain 11 digits.');

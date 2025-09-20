@@ -4,6 +4,7 @@ import HeaderPage from "./header/page";
 import LargeEcommerceFooter from "./footer/page";
 import { Toaster } from "react-hot-toast";
 import CartContextProvider from "./cartcontext/cartcontextprovider";
+import { Component } from "lucide-react";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -28,6 +29,7 @@ export default function RootLayout({ children }) {
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <CartContextProvider>
+
         <HeaderPage />
         {children}
         <LargeEcommerceFooter />
