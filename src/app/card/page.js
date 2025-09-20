@@ -187,10 +187,12 @@ function CardPage({
 
             <button
               onClick={() => addToCartHandler(product)}
-              className="text-black border border-black 
-         rounded-tr-md rounded-bl-md sm:rounded-tr-xl sm:rounded-bl-xl
-         transition-all duration-300 hover:bg-black hover:text-white 
-         p-1 sm:px-4 sm:py-1.5 sm:text-sm sm:font-medium"
+             className="text-black border border-black 
+     rounded-tr-md rounded-bl-md sm:rounded-tr-xl sm:rounded-bl-xl
+     transition-all duration-300 hover:bg-black hover:text-white 
+     flex items-center justify-center
+     w-10 h-10 sm:min-w-[120px] sm:h-12
+     text-xs sm:text-sm font-medium"
             >
               <span className="block sm:hidden">
                 <FiShoppingCart className="w-4 h-4" />
